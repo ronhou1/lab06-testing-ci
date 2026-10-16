@@ -11,7 +11,7 @@ def test_calcular_total_factura_exitoso_con_mock():
     with patch("facturacion.obtener_tipo_cambio", return_value=3.80):
         total = calcular_total_factura(monto_usd=100.0, impuesto_porcentaje=18.0)
         # Cambiamos 118.0 por 999.0 para forzar el fallo de la prueba en CI
-        assert total == 999.0  # 100 * 3.80 * (1 + 18/100) = 448.4
+        assert total == 118.0  # 100 * 3.80 * (1 + 18/100) = 448.4
 
 
 def test_calcular_total_factura_monto_invalido():
