@@ -7,17 +7,20 @@ from facturacion import calcular_total_factura
 
 
 def test_calcular_total_factura_exitoso_con_mock():
-    # Simulamos que la API externa devuelve un tipo de cambio fijo de 3.80
+    # Simulamos la respuesta de la API externa
     with patch("facturacion.obtener_tipo_cambio", return_value=3.80):
-        resultado = calcular_total_factura(100.0, aplicar_descuento=False)
-        assert resultado == 380.00
+        total = calcular_total_factura(monto_usd=100.0, impuesto_porcentaje=18.0)
+        # Cambiamos 118.0 por 999.0 para forzar el fallo de la prueba en CI
+        assert total == 999.0
 
-def test_calcular_total_factura_con_descuento_mock():
-    with patch("facturacion.obtener_tipo_cambio", return_value=3.80):
-        resultado = calcular_total_factura(100.0, aplicar_descuento=True)
-        assert resultado == 342.00  # 380 - 10% = 342.00
 
-def test_calcular_total_factura_monto_invalido_lanza_excepcion():
-    with pytest.raises(ValueError) as exc_info:
-        calcular_total_factura(-50.0)
-    assert str(exc_info.value) == "El monto de la factura debe ser mayor a cero"
+def test_calcular_total_factura_monto_invalido():
+    with pytest.raises(
+        ValueError, match="El monto debe ser un numero positivo mayor a cero"
+    ):
+        calcular_total_factura(monto_usd=-50.0)
+
+
+def test_calcular_total_factura_impuesto_invalido():
+    with pytest.raises(ValueError, match="El porcentaje de impuesto no puede ser negativo"):
+        calcular_total_factura(monto_usd=100.0, impuesto_porcentaje=-5.0)
